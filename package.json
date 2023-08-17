@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "did": "node --loader @swc-node/register/esm src/register.ts"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.31.0",
+    "@mattrglobal/bbs-signatures": "^1.1.0",
+    "@swc-node/register": "^1.6.6",
+    "@swc/core": "^1.3.78",
+    "chalk": "^5.3.0",
+    "multiformats": "^12.0.1",
+    "typescript": "^5.1.6",
+    "web3.storage": "^4.5.5"
+  }
+}
