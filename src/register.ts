@@ -5,9 +5,9 @@ import {
   TopicMessageSubmitTransaction,
 } from '@hashgraph/sdk';
 import { generateBls12381G2KeyPair } from '@mattrglobal/bbs-signatures';
+import base58 from 'bs58';
 import chalk from 'chalk';
 import { base58btc } from 'multiformats/bases/base58';
-
 import { Readable } from 'stream';
 import nacl from 'tweetnacl';
 import { Web3Storage } from 'web3.storage';
@@ -87,11 +87,10 @@ ${chalk.green('Bls12381G2 Verification secret key (hex)')}: ${Buffer.from(
 ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
     blsKeyPair.publicKey
   ).toString('hex')}
-  
 `);
 
   const publicKeyMultibase = base58btc.encode(publicKey);
-  const blsPublicKeyMultibase = base58btc.encode(blsKeyPair.publicKey);
+  // const blsPublicKeyMultibase = base58btc.encode(blsKeyPair.publicKey);
 
   // Prepare all components we need for the did as per the spec
   const hedera_base58_key = base58btc.baseEncode(publicKey);
@@ -104,7 +103,7 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
   // If we want to use base58 instead of multibase - 2018 keys do not support
   // multibase but 2020 ones do.
   //  const publicKeyBase58 = base58.encode(vpk);
-  //  const blsPublicKeyBase58 = base58.encode(vpk);
+  const blsPublicKeyBase58 = base58.encode(blsKeyPair.publicKey);
 
   const doc = {
     '@context': 'https://www.w3.org/ns/did/v1',
@@ -122,8 +121,9 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
         id: `${did}#did-root-key-bbs`,
         type: 'Bls12381G2Key2020',
         controller: did,
-        publicKeyMultibase: blsPublicKeyMultibase,
-        // publicKeyBase58: blsPublicKeyBase58,
+        // publicKeyMultibase: blsPublicKeyMultibase,
+        // base58 required for mattr library
+        publicKeyBase58: blsPublicKeyBase58,
       },
     ],
     // Required for jsonld-signatures - can be full id or just the fragment
