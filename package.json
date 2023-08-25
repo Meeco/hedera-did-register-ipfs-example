@@ -3,6 +3,7 @@
     "did": "node --loader @swc-node/register/esm src/register.ts"
   },
   "dependencies": {
+    "@digitalbazaar/ed25519-verification-key-2020": "^4.1.0",
     "@hashgraph/sdk": "^2.31.0",
     "@mattrglobal/bbs-signatures": "^1.1.0",
     "@swc-node/register": "^1.6.6",

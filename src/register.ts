@@ -1,3 +1,4 @@
+import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import {
   PrivateKey,
   TopicCreateTransaction,
@@ -9,7 +10,6 @@ import base58 from 'bs58';
 import chalk from 'chalk';
 import { base58btc } from 'multiformats/bases/base58';
 import { Readable } from 'stream';
-import nacl from 'tweetnacl';
 import { Web3Storage } from 'web3.storage';
 import { hederaClient } from './hedera-client';
 
@@ -64,16 +64,28 @@ async function makeTopic() {
  */
 async function makeHederaDidDoc(topicId: string) {
   // Create a new key pair to use for verification method
-  const { publicKey, secretKey } = nacl.sign.keyPair();
+  const key = await Ed25519VerificationKey2020.generate();
+  const keyData = key.export({ publicKey: true });
+
+  const publicKey = Buffer.from(
+    base58btc.decode(key.publicKeyMultibase)
+  ).toString('hex');
+  const secretKey = Buffer.from(
+    base58btc.decode(key.privateKeyMultibase)
+  ).toString('hex');
 
   // Log so we can get a copy
   console.log(`
-${chalk.blue('Ed25519 Verification secret key (hex)')}: ${Buffer.from(
-    secretKey
-  ).toString('hex')}
-${chalk.blue('Ed25519 Verification public key (hex)')}: ${Buffer.from(
-    publicKey
-  ).toString('hex')}
+${chalk.blue('Ed25519 Verification secret key (multibase)')}: ${
+    key.privateKeyMultibase
+  }
+${chalk.blue('Ed25519 Verification public key (multibase)')}: ${
+    key.publicKeyMultibase
+  }
+  `);
+  console.log(`
+${chalk.blue('Ed25519 Verification secret key (hex)')}: ${secretKey}
+${chalk.blue('Ed25519 Verification public key (hex)')}: ${publicKey}
   `);
 
   // Create our BLS12381G2 Keypair to use for BBS Signatures
@@ -89,11 +101,10 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
   ).toString('hex')}
 `);
 
-  const publicKeyMultibase = base58btc.encode(publicKey);
   // const blsPublicKeyMultibase = base58btc.encode(blsKeyPair.publicKey);
 
   // Prepare all components we need for the did as per the spec
-  const hedera_base58_key = base58btc.baseEncode(publicKey);
+  const hedera_base58_key = keyData.publicKeyMultibase;
   const hedera_network = 'testnet';
   const hedera_specific_id_string = `${hedera_network}:${hedera_base58_key}`;
   const hedera_specific_parameters = topicId;
@@ -111,11 +122,9 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
     authentication: [`${did}#did-root-key`],
     publicKey: [
       {
+        ...keyData,
         id: `${did}#did-root-key`,
-        type: 'Ed25519VerificationKey2020',
         controller: did,
-        publicKeyMultibase,
-        // publicKeyBase58,
       },
       {
         id: `${did}#did-root-key-bbs`,
@@ -129,6 +138,8 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
     // Required for jsonld-signatures - can be full id or just the fragment
     assertionMethod: ['#did-root-key', '#did-root-key-bbs'],
   };
+
+  // console.log(JSON.stringify(doc, null, 2));
 
   return { doc, publicKey, secretKey };
 }
