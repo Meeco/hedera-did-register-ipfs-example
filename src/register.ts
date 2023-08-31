@@ -120,7 +120,7 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
     '@context': 'https://www.w3.org/ns/did/v1',
     id: did,
     authentication: [`${did}#did-root-key`],
-    publicKey: [
+    verificationMethod: [
       {
         ...keyData,
         id: `${did}#did-root-key`,
