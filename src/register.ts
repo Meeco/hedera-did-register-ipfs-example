@@ -13,9 +13,9 @@ import { Readable } from 'stream';
 import { Web3Storage } from 'web3.storage';
 import { hederaClient } from './hedera-client';
 
-if (!process.env.WEB3_API_TOKEN) {
+if (!process.env.WEB3_STORAGE_API_TOKEN) {
   console.error(
-    `WEB3_API_TOKEN environment variable required to push to web3.storage`
+    `WEB3_STORAGE_API_TOKEN environment variable required to push to web3.storage`
   );
   process.exit(1);
 }
@@ -145,7 +145,7 @@ ${chalk.green('Bls12381G2 Verification public key (hex)')}: ${Buffer.from(
 }
 
 async function writeDidDocumentToIPFS(didDoc: any) {
-  const client = new Web3Storage({ token: process.env.WEB3_API_TOKEN! });
+  const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN! });
   const name = 'did-document.json';
   const rootCid = await client.put([
     {

@@ -17,4 +17,4 @@
 
 - MY_ACCOUNT_ID (Account ID from https://portal.hedera.com/)
 - MY_PRIVATE_KEY (ECDSA DER encoded private key from https://portal.hedera.com/)
-- WEB3_API_TOKEN (from https://web3.storage/)
+- WEB3_STORAGE_API_TOKEN (from https://web3.storage/)
