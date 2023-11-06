@@ -1,5 +1,8 @@
 import { Client, Hbar } from '@hashgraph/sdk';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 function environmentSetup() {
   //Grab your Hedera testnet account ID and private key from your .env file
   const myAccountId = process.env.MY_ACCOUNT_ID;
